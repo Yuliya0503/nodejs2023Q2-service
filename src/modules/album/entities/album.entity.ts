@@ -1,4 +1,4 @@
-import { IAlbum } from '../../models/interfaces';
+import { IAlbum } from '../../../models/interfaces';
 export class Album implements IAlbum {
   id: string;
   name: string;

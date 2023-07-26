@@ -1,4 +1,4 @@
-import { ITrack } from '../../models/interfaces';
+import { ITrack } from '../../../models/interfaces';
 export class Track implements ITrack {
   id: string;
   name: string;

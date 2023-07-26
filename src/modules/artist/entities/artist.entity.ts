@@ -1,4 +1,4 @@
-import { IArtist } from '../../models/interfaces';
+import { IArtist } from '../../../models/interfaces';
 export class Artist implements IArtist {
   id: string;
   name: string;
