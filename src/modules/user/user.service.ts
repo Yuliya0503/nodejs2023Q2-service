@@ -90,7 +90,7 @@ export class UserService {
     }
 
     if (user.password !== oldPassword) {
-      throw new HttpException('OldPassword is wrong', HttpStatus.FORBIDDEN);
+      throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
     }
 
     user.password = newPassword;
