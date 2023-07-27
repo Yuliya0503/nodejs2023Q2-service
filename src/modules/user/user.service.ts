@@ -19,6 +19,23 @@ export class UserService {
     };
     mockUsers.push(newUser);
 
+    if (!newUser.password || !newUser.login) {
+      throw new HttpException(
+        'Old password and new password are required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (
+      typeof newUser.password !== 'string' ||
+      typeof newUser.login !== 'string'
+    ) {
+      throw new HttpException(
+        'Old password and new password are required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const userWithNotPassword = {
       id: newUser.id,
       login: newUser.login,
