@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { v4 } from 'uuid';
 import { mockUsers } from 'src/db/db';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { valodatorId } from '../../helpers/validator';
 
 @Injectable()
 export class UserService {
@@ -16,16 +18,85 @@ export class UserService {
       updatedAt: Date.now(),
     };
     mockUsers.push(newUser);
-    const { password, ...userWithNotPassword } = newUser;
-    //password
+
+    const userWithNotPassword = {
+      id: newUser.id,
+      login: newUser.login,
+      version: newUser.version,
+      createdAt: newUser.createdAt,
+      updatedAt: newUser.updatedAt,
+    };
 
     return userWithNotPassword;
   }
 
   public getUsers() {
-    const users = mockUsers.map(({ password, ...allWithNotPass }) => {
-      return allWithNotPass;
-    });
+    const users = mockUsers.map(
+      ({ id, login, version, createdAt, updatedAt }) => {
+        return { id, login, version, createdAt, updatedAt };
+      },
+    );
     return users;
+  }
+
+  public getUserById(id: string) {
+    valodatorId(id);
+    const user = mockUsers.find((user) => user.id === id);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const userWithNotPassword = {
+      id: user.id,
+      login: user.login,
+      version: user.version,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+    return userWithNotPassword;
+  }
+
+  public update(id: string, { oldPassword, newPassword }: UpdateUserDto) {
+    if (!oldPassword || !newPassword) {
+      throw new HttpException(
+        'Old password and new password are required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    valodatorId(id);
+
+    const user = mockUsers.find((user) => user.id === id);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.password !== oldPassword) {
+      throw new HttpException('OldPassword is wrong', HttpStatus.FORBIDDEN);
+    }
+
+    user.password = newPassword;
+    user.version++;
+    user.updatedAt = Date.now();
+
+    const userWithNotPassword = {
+      id: user.id,
+      login: user.login,
+      version: user.version,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+    return userWithNotPassword;
+  }
+
+  public remove(id: string) {
+    valodatorId(id);
+    const userIdInd = mockUsers.findIndex((user) => user.id === id);
+    if (userIdInd === -1) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    mockUsers.splice(userIdInd, 1);
   }
 }
