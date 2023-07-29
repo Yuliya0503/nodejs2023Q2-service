@@ -1,4 +1,44 @@
-import { Controller } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Put,
+  Delete,
+  HttpCode,
+  Body,
+} from '@nestjs/common';
+import { AlbumService } from './album.service';
+import { CreateAlbumDto } from './dto/create-album.dto';
+import { UpdateAlbumDto } from './dto/update-album.dto';
 
 @Controller('album')
-export class AlbumController {}
+export class AlbumController {
+  constructor(private readonly albumService: AlbumService) {}
+
+  @Post()
+  create(@Body() createAlbumDto: CreateAlbumDto) {
+    return this.albumService.create(createAlbumDto);
+  }
+
+  @Get()
+  getAlbums() {
+    return this.albumService.getalbums();
+  }
+
+  @Get(':id')
+  getalbum(@Param('id') id: string) {
+    return this.albumService.getAlbum(id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
+    return this.albumService.update(id, updateAlbumDto);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@Param('id') id: string) {
+    return this.albumService.remove(id);
+  }
+}
