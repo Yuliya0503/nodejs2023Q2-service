@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { v4 } from 'uuid';
-import { mockArtists } from 'src/db/db';
+import { mockAlbums, mockArtists, mockTracks } from 'src/db/db';
 import { valodatorId } from 'src/helpers/validator';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
@@ -84,5 +84,17 @@ export class ArtistService {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
     mockArtists.splice(artistIdInd, 1);
+
+    mockTracks.forEach((track) => {
+      if (track.artistId === id) {
+        track.artistId = null;
+      }
+    });
+
+    mockAlbums.forEach((album) => {
+      if (album.artistId === id) {
+        album.artistId = null;
+      }
+    });
   }
 }

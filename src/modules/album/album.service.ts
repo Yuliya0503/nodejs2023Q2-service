@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { v4 } from 'uuid';
-import { mockAlbums } from 'src/db/db';
+import { mockAlbums, mockTracks } from 'src/db/db';
 import { valodatorId } from 'src/helpers/validator';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 
@@ -102,5 +102,11 @@ export class AlbumService {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
     mockAlbums.splice(albumIdInd, 1);
+
+    mockTracks.forEach((track) => {
+      if (track.albumId === id) {
+        track.albumId = null;
+      }
+    });
   }
 }
