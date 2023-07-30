@@ -6,6 +6,10 @@ import { User } from '../modules/user/entities/user.entity';
 
 export const mockAlbums: Album[] = [];
 export const mockArtists: Artist[] = [];
-export const mockFavorites: Favorites[] = [];
+export const mockFavorites: Favorites = {
+  artists: [],
+  albums: [],
+  tracks: [],
+};
 export const mockTracks: Track[] = [];
 export const mockUsers: User[] = [];

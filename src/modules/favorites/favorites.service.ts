@@ -1,4 +1,118 @@
-import { Injectable } from '@nestjs/common';
-
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Artist } from '../artist/entities/artist.entity';
+import { Album } from '../album/entities/album.entity';
+import { Track } from '../track/entities/track.entity';
+import {
+  mockAlbums,
+  mockArtists,
+  mockTracks,
+  mockFavorites,
+} from '../../db/db';
+import { valodatorId } from 'src/helpers/validator';
 @Injectable()
-export class FavoritesService {}
+export class FavoritesService {
+  getFaforites() {
+    const artists: Artist[] = [];
+    const albums: Album[] = [];
+    const tracks: Track[] = [];
+
+    for (const id of mockFavorites.artists) {
+      const artist = mockArtists.find((artist) => artist.id === id);
+      if (artist) {
+        artists.push(artist);
+      }
+    }
+
+    for (const id of mockFavorites.albums) {
+      const album = mockAlbums.find((album) => {
+        return album.id === id;
+      });
+      if (album) {
+        albums.push(album);
+      }
+    }
+
+    for (const id of mockFavorites.tracks) {
+      const track = mockTracks.find((track) => {
+        return track.id === id;
+      });
+      if (track) {
+        tracks.push(track);
+      }
+    }
+
+    return { artists, albums, tracks };
+  }
+
+  addTrackToFavorite(id: string) {
+    valodatorId(id);
+    const track = mockTracks.find((track) => {
+      return track.id === id;
+    });
+    if (!track) {
+      throw new HttpException(
+        'Track not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    mockFavorites.tracks.push(track.id);
+    return track;
+  }
+
+  removeTrackFromFavorite(id: string) {
+    valodatorId(id);
+    const trackIdInd = mockFavorites.tracks.indexOf(id);
+    if (trackIdInd === -1) {
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+    }
+    mockFavorites.tracks.splice(trackIdInd, 1);
+  }
+
+  addAlbumToFavorite(id: string) {
+    valodatorId(id);
+    const album = mockAlbums.find((album) => {
+      return album.id === id;
+    });
+    if (!album) {
+      throw new HttpException(
+        'Album not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    mockFavorites.albums.push(album.id);
+    return album;
+  }
+
+  removeAlbumFromFavorite(id: string) {
+    valodatorId(id);
+    const albumIdInd = mockFavorites.albums.indexOf(id);
+    if (albumIdInd === -1) {
+      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
+    }
+    mockFavorites.albums.splice(albumIdInd, 1);
+  }
+
+  addArtistToFavorite(id: string) {
+    valodatorId(id);
+    const artist = mockArtists.find((artist) => {
+      return artist.id === id;
+    });
+    if (!artist) {
+      throw new HttpException(
+        'Artist not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    mockFavorites.artists.push(artist.id);
+    return artist;
+  }
+
+  removeArtistFromFavorite(id: string) {
+    valodatorId(id);
+    const artistIdInd = mockFavorites.artists.indexOf(id);
+    if (artistIdInd === -1) {
+      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
+    }
+    mockFavorites.artists.splice(artistIdInd, 1);
+  }
+}
