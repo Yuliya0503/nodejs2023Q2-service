@@ -1,75 +1,49 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { mockTracks } from '../../db/db';
+import { mockFavorites, mockTracks } from '../../db/db';
 import { v4 } from 'uuid';
 import { Track } from './entities/track.entity';
-import { valodatorId } from '../../helpers/validator';
+import {
+  valodatorId,
+  validatorNameAndDuration,
+  validatorTrack,
+} from '../../helpers/validator';
 
-/**id: string;
-  name: string;
-  artistId: string | null;
-  albumId: string | null;
-  duration: number; */
 @Injectable()
 export class TrackService {
-  create({ name, artistId, albumId, duration }: CreateTrackDto): Track {
-    const newTrack = {
+  public create({ name, artistId, albumId, duration }: CreateTrackDto): Track {
+    const newTrack: Track = {
       id: v4(),
       name,
       artistId,
       albumId,
       duration,
     };
-
-    if (!name || !duration) {
-      throw new HttpException(
-        'Name and duration are required',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
+    validatorNameAndDuration(name, duration);
     mockTracks.push(newTrack);
     return newTrack;
   }
 
-  getTracks() {
+  public getTracks(): Track[] {
     return mockTracks;
   }
 
-  getTrackById(id: string) {
+  public getTrackById(id: string): Track {
     valodatorId(id);
-    const track = mockTracks.find((track) => track.id === id);
-    if (!track) {
-      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
-    }
+    const track: Track = mockTracks.find((track) => track.id === id);
+    validatorTrack(track);
     return track;
   }
 
-  update(
+  public update(
     id: string,
     { name, artistId, albumId, duration }: UpdateTrackDto,
   ): Track {
     valodatorId(id);
-    const track = mockTracks.find((track) => track.id === id);
-    if (!track) {
-      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (!name || !duration) {
-      throw new HttpException(
-        'Name and duration are required',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    if (typeof name !== 'string' || typeof duration !== 'number') {
-      throw new HttpException(
-        'Name and duration are required',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
+    validatorNameAndDuration(name, duration);
+    const track: Track = mockTracks.find((track) => track.id === id);
+    validatorTrack(track);
     track.name = name;
     track.artistId = artistId;
     track.albumId = albumId;
@@ -78,12 +52,17 @@ export class TrackService {
     return track;
   }
 
-  remove(id: string) {
+  public remove(id: string): void {
     valodatorId(id);
-    const trackIdInd = mockTracks.findIndex((track) => track.id === id);
+    const trackIdInd: number = mockTracks.findIndex((track) => track.id === id);
     if (trackIdInd === -1) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
     mockTracks.splice(trackIdInd, 1);
+    mockFavorites.tracks.forEach((trackId) => {
+      if (trackId === id) {
+        trackId = null;
+      }
+    });
   }
 }

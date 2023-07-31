@@ -9,44 +9,47 @@ import {
   mockFavorites,
 } from '../../db/db';
 import { valodatorId } from 'src/helpers/validator';
+
+interface IGetFavorites {
+  artists: Artist[];
+  albums: Album[];
+  tracks: Track[];
+}
+
 @Injectable()
 export class FavoritesService {
-  getFaforites() {
+  public getFaforites(): IGetFavorites {
     const artists: Artist[] = [];
     const albums: Album[] = [];
     const tracks: Track[] = [];
-
     for (const id of mockFavorites.artists) {
-      const artist = mockArtists.find((artist) => artist.id === id);
+      const artist: Artist = mockArtists.find((artist) => artist.id === id);
       if (artist) {
         artists.push(artist);
       }
     }
-
     for (const id of mockFavorites.albums) {
-      const album = mockAlbums.find((album) => {
+      const album: Album = mockAlbums.find((album) => {
         return album.id === id;
       });
       if (album) {
         albums.push(album);
       }
     }
-
     for (const id of mockFavorites.tracks) {
-      const track = mockTracks.find((track) => {
+      const track: Track = mockTracks.find((track) => {
         return track.id === id;
       });
       if (track) {
         tracks.push(track);
       }
     }
-
     return { artists, albums, tracks };
   }
 
-  addTrackToFavorite(id: string) {
+  public addTrackToFavorite(id: string): Track {
     valodatorId(id);
-    const track = mockTracks.find((track) => {
+    const track: Track = mockTracks.find((track) => {
       return track.id === id;
     });
     if (!track) {
@@ -59,18 +62,18 @@ export class FavoritesService {
     return track;
   }
 
-  removeTrackFromFavorite(id: string) {
+  public removeTrackFromFavorite(id: string): void {
     valodatorId(id);
-    const trackIdInd = mockFavorites.tracks.indexOf(id);
+    const trackIdInd: number = mockFavorites.tracks.indexOf(id);
     if (trackIdInd === -1) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
     mockFavorites.tracks.splice(trackIdInd, 1);
   }
 
-  addAlbumToFavorite(id: string) {
+  public addAlbumToFavorite(id: string): Album {
     valodatorId(id);
-    const album = mockAlbums.find((album) => {
+    const album: Album = mockAlbums.find((album) => {
       return album.id === id;
     });
     if (!album) {
@@ -83,18 +86,18 @@ export class FavoritesService {
     return album;
   }
 
-  removeAlbumFromFavorite(id: string) {
+  public removeAlbumFromFavorite(id: string): void {
     valodatorId(id);
-    const albumIdInd = mockFavorites.albums.indexOf(id);
+    const albumIdInd: number = mockFavorites.albums.indexOf(id);
     if (albumIdInd === -1) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
     mockFavorites.albums.splice(albumIdInd, 1);
   }
 
-  addArtistToFavorite(id: string) {
+  public addArtistToFavorite(id: string): Artist {
     valodatorId(id);
-    const artist = mockArtists.find((artist) => {
+    const artist: Artist = mockArtists.find((artist) => {
       return artist.id === id;
     });
     if (!artist) {
@@ -107,9 +110,9 @@ export class FavoritesService {
     return artist;
   }
 
-  removeArtistFromFavorite(id: string) {
+  public removeArtistFromFavorite(id: string): void {
     valodatorId(id);
-    const artistIdInd = mockFavorites.artists.indexOf(id);
+    const artistIdInd: number = mockFavorites.artists.indexOf(id);
     if (artistIdInd === -1) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }

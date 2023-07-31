@@ -4,7 +4,7 @@ import { User } from './entities/user.entity';
 import { v4 } from 'uuid';
 import { mockUsers } from 'src/db/db';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { valodatorId } from '../../helpers/validator';
+import { valodatorId, validatorPassAndLogin } from '../../helpers/validator';
 
 @Injectable()
 export class UserService {
@@ -18,24 +18,7 @@ export class UserService {
       updatedAt: Date.now(),
     };
     mockUsers.push(newUser);
-
-    if (!newUser.password || !newUser.login) {
-      throw new HttpException(
-        'Old password and new password are required',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    if (
-      typeof newUser.password !== 'string' ||
-      typeof newUser.login !== 'string'
-    ) {
-      throw new HttpException(
-        'Old password and new password are required',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
+    validatorPassAndLogin(newUser.password, newUser.login);
     const userWithNotPassword = {
       id: newUser.id,
       login: newUser.login,
@@ -77,7 +60,7 @@ export class UserService {
   public update(id: string, { oldPassword, newPassword }: UpdateUserDto) {
     if (!oldPassword || !newPassword) {
       throw new HttpException(
-        'Old password and new password are required',
+        'Bad request. userId is invalid (not uuid)',
         HttpStatus.BAD_REQUEST,
       );
     }
