@@ -13,6 +13,7 @@ async function bootstrap() {
     .addServer('/doc')
     .setVersion('1.0.0')
     .setTitle('Home Library Service')
+    .setDescription('Home music library service')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);

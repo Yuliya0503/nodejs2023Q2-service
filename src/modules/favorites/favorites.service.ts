@@ -10,15 +10,9 @@ import {
 } from '../../db/db';
 import { valodatorId } from 'src/helpers/validator';
 
-interface IGetFavorites {
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
-}
-
 @Injectable()
 export class FavoritesService {
-  public getFaforites(): IGetFavorites {
+  public getFaforites() {
     const artists: Artist[] = [];
     const albums: Album[] = [];
     const tracks: Track[] = [];
