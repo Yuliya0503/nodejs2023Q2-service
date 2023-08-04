@@ -1,0 +1,21 @@
+# Файл docker-compose должен начинаться с тега версии.
+version: '3.9'
+# Следует учитывать, что docker-composes работает с сервисами.
+# 1 сервис = 1 контейнер.
+# Сервисом может быть клиент, сервер, сервер баз данных...
+# Раздел, в котором будут описаны сервисы, начинается с 'services'.
+services:
+
+  postgres:
+    container_name: postgres_db
+    image: postgres:13.5-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports: 
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+volumes:
+  postgres:
