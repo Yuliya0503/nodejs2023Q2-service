@@ -54,6 +54,7 @@ export class AlbumController {
   @ApiOkResponse({
     description: 'Successful operation',
     type: [Album],
+    isArray: true,
   })
   getAlbums() {
     return this.albumService.getalbums();
