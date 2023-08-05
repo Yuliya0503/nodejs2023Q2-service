@@ -60,6 +60,7 @@ export class AlbumService {
         id: id,
       },
       data: {
+        id: id,
         name: name,
         year: year,
         artistId: artistId,
