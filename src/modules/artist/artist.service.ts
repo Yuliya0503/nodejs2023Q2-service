@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 
 @Injectable()
 export class ArtistService {
-  public async create({ name, grammy }: CreateArtistDto): Promise<Artist> {
+  async create({ name, grammy }: CreateArtistDto): Promise<Artist> {
     const newArtist: Artist = {
       id: v4(),
       name,
@@ -20,11 +20,11 @@ export class ArtistService {
     return await prisma.artist.create({ data: newArtist });
   }
 
-  public async getArtists(): Promise<Artist[]> {
+  async getArtists(): Promise<Artist[]> {
     return await prisma.artist.findMany();
   }
 
-  public async getAtrist(id: string): Promise<Artist> {
+  async getAtrist(id: string): Promise<Artist> {
     valodatorId(id);
     const artist: Artist = await prisma.artist.findFirst({ where: { id: id } });
     if (!artist) {
@@ -33,10 +33,7 @@ export class ArtistService {
     return artist;
   }
 
-  public async update(
-    id: string,
-    { name, grammy }: UpdateArtistDto,
-  ): Promise<Artist> {
+  async update(id: string, { name, grammy }: UpdateArtistDto): Promise<Artist> {
     valodatorId(id);
     validatorTypeForAtrist(name, grammy);
     const artist: Artist = await prisma.artist.findFirst({ where: { id: id } });
@@ -55,7 +52,7 @@ export class ArtistService {
     });
   }
 
-  public async remove(id: string): Promise<Artist> {
+  async remove(id: string): Promise<Artist> {
     valodatorId(id);
     const artist: Artist = await prisma.artist.findFirst({
       where: {

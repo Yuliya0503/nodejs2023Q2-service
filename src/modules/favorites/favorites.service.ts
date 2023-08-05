@@ -12,7 +12,7 @@ import { valodatorId } from 'src/helpers/validator';
 
 @Injectable()
 export class FavoritesService {
-  public getFaforites() {
+  getFaforites() {
     const artists: Artist[] = [];
     const albums: Album[] = [];
     const tracks: Track[] = [];
@@ -41,7 +41,7 @@ export class FavoritesService {
     return { artists, albums, tracks };
   }
 
-  public addTrackToFavorite(id: string): Track {
+  addTrackToFavorite(id: string): Track {
     valodatorId(id);
     const track: Track = mockTracks.find((track) => {
       return track.id === id;
@@ -56,7 +56,7 @@ export class FavoritesService {
     return track;
   }
 
-  public removeTrackFromFavorite(id: string): void {
+  removeTrackFromFavorite(id: string): void {
     valodatorId(id);
     const trackIdInd: number = mockFavorites.tracks.indexOf(id);
     if (trackIdInd === -1) {
@@ -65,7 +65,7 @@ export class FavoritesService {
     mockFavorites.tracks.splice(trackIdInd, 1);
   }
 
-  public addAlbumToFavorite(id: string): Album {
+  addAlbumToFavorite(id: string): Album {
     valodatorId(id);
     const album: Album = mockAlbums.find((album) => {
       return album.id === id;
@@ -80,7 +80,7 @@ export class FavoritesService {
     return album;
   }
 
-  public removeAlbumFromFavorite(id: string): void {
+  removeAlbumFromFavorite(id: string): void {
     valodatorId(id);
     const albumIdInd: number = mockFavorites.albums.indexOf(id);
     if (albumIdInd === -1) {
@@ -89,7 +89,7 @@ export class FavoritesService {
     mockFavorites.albums.splice(albumIdInd, 1);
   }
 
-  public addArtistToFavorite(id: string): Artist {
+  addArtistToFavorite(id: string): Artist {
     valodatorId(id);
     const artist: Artist = mockArtists.find((artist) => {
       return artist.id === id;
@@ -104,7 +104,7 @@ export class FavoritesService {
     return artist;
   }
 
-  public removeArtistFromFavorite(id: string): void {
+  removeArtistFromFavorite(id: string): void {
     valodatorId(id);
     const artistIdInd: number = mockFavorites.artists.indexOf(id);
     if (artistIdInd === -1) {

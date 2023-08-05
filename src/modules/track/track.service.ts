@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
 
 @Injectable()
 export class TrackService {
-  public async create({
+  async create({
     name,
     artistId,
     albumId,
@@ -31,18 +31,18 @@ export class TrackService {
     return await prisma.track.create({ data: newTrack });
   }
 
-  public async getTracks(): Promise<Track[]> {
+  async getTracks(): Promise<Track[]> {
     return await prisma.track.findMany();
   }
 
-  public async getTrackById(id: string): Promise<Track> {
+  async getTrackById(id: string): Promise<Track> {
     valodatorId(id);
     const track: Track = await prisma.track.findFirst({ where: { id: id } });
     validatorTrack(track);
     return track;
   }
 
-  public async update(
+  async update(
     id: string,
     { name, artistId, albumId, duration }: UpdateTrackDto,
   ): Promise<Track> {
@@ -64,7 +64,7 @@ export class TrackService {
     });
   }
 
-  public async remove(id: string): Promise<Track> {
+  async remove(id: string): Promise<Track> {
     valodatorId(id);
     const track: Track = await prisma.track.findFirst({ where: { id: id } });
     if (!track) {

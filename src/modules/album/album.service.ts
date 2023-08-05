@@ -13,11 +13,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 @Injectable()
 export class AlbumService {
-  public async create({
-    name,
-    year,
-    artistId,
-  }: CreateAlbumDto): Promise<Album> {
+  async create({ name, year, artistId }: CreateAlbumDto): Promise<Album> {
     const newAlbum: Album = {
       id: v4(),
       name,
@@ -31,11 +27,11 @@ export class AlbumService {
     });
   }
 
-  public async getalbums(): Promise<Album[]> {
+  async getalbums(): Promise<Album[]> {
     return await prisma.album.findMany();
   }
 
-  public async getAlbum(id: string): Promise<Album> {
+  async getAlbum(id: string): Promise<Album> {
     valodatorId(id);
     const album: Album = await prisma.album.findFirst({ where: { id: id } });
     if (!album) {
@@ -44,7 +40,7 @@ export class AlbumService {
     return album;
   }
 
-  public async update(
+  async update(
     id: string,
     { name, year, artistId }: UpdateAlbumDto,
   ): Promise<Album> {
@@ -68,7 +64,7 @@ export class AlbumService {
     });
   }
 
-  public async remove(id: string): Promise<Album> {
+  async remove(id: string): Promise<Album> {
     valodatorId(id);
     const albumIn = await prisma.album.findFirst({
       where: { id: id },
