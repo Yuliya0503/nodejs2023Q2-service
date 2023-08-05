@@ -48,7 +48,10 @@ export class TrackController {
     summary: 'Get tracks list',
     description: 'Gets all library tracks list',
   })
-  @ApiOkResponse({ description: 'Successful operation', type: Track })
+  @ApiOkResponse({
+    description: 'Successful operation',
+    type: [Track],
+  })
   getTracks() {
     return this.trackService.getTracks();
   }
