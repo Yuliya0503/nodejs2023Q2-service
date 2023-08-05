@@ -54,6 +54,7 @@ export class ArtistController {
   @ApiOkResponse({
     description: 'Successful operation',
     type: [Artist],
+    isArray: true,
   })
   getArtists() {
     return this.artistService.getArtists();
