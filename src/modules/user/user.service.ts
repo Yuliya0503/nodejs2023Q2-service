@@ -2,13 +2,15 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { v4 } from 'uuid';
-import { mockUsers } from 'src/db/db';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { valodatorId, validatorPassAndLogin } from '../../helpers/validator';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 @Injectable()
 export class UserService {
-  public create(CreateUserDto: CreateUserDto) {
+  async create(CreateUserDto: CreateUserDto) {
     const newUser: User = {
       id: v4(),
       login: CreateUserDto.login,
@@ -17,8 +19,8 @@ export class UserService {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    mockUsers.push(newUser);
     validatorPassAndLogin(newUser.password, newUser.login);
+    await prisma.user.create({ data: newUser });
     const userWithNotPassword = {
       id: newUser.id,
       login: newUser.login,
@@ -26,27 +28,23 @@ export class UserService {
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt,
     };
-
     return userWithNotPassword;
   }
 
-  public getUsers() {
-    const users = mockUsers.map(
-      ({ id, login, version, createdAt, updatedAt }) => {
-        return { id, login, version, createdAt, updatedAt };
-      },
-    );
-    return users;
+  async getUsers() {
+    const users = await prisma.user.findMany();
+    const res = users.map(({ id, login, version, createdAt, updatedAt }) => {
+      return { id, login, version, createdAt, updatedAt };
+    });
+    return res;
   }
 
-  public getUserById(id: string) {
+  async getUserById(id: string) {
     valodatorId(id);
-    const user = mockUsers.find((user) => user.id === id);
-
+    const user = await prisma.user.findFirst({ where: { id: id } });
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-
     const userWithNotPassword = {
       id: user.id,
       login: user.login,
@@ -57,7 +55,7 @@ export class UserService {
     return userWithNotPassword;
   }
 
-  public update(id: string, { oldPassword, newPassword }: UpdateUserDto) {
+  async update(id: string, { oldPassword, newPassword }: UpdateUserDto) {
     if (!oldPassword || !newPassword) {
       throw new HttpException(
         'Bad request. userId is invalid (not uuid)',
@@ -65,38 +63,36 @@ export class UserService {
       );
     }
     valodatorId(id);
+    const user = await prisma.user.findFirst({ where: { id: id } });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    if (user.password !== oldPassword) {
+      throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
+    }
+    const newDataUser = {
+      ...user,
+      password: newPassword,
+      updatedAt: Date.now(),
+      version: (user.version += 1),
+    };
+    await prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: newDataUser,
+    });
+    delete newDataUser.password;
+    return newDataUser;
+  }
 
-    const user = mockUsers.find((user) => user.id === id);
-
+  async remove(id: string) {
+    valodatorId(id);
+    const user = await prisma.user.findFirst({ where: { id: id } });
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    if (user.password !== oldPassword) {
-      throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
-    }
-
-    user.password = newPassword;
-    user.version++;
-    user.updatedAt = Date.now();
-
-    const userWithNotPassword = {
-      id: user.id,
-      login: user.login,
-      version: user.version,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
-    return userWithNotPassword;
-  }
-
-  public remove(id: string) {
-    valodatorId(id);
-    const userIdInd = mockUsers.findIndex((user) => user.id === id);
-    if (userIdInd === -1) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-
-    mockUsers.splice(userIdInd, 1);
+    return await prisma.user.delete({ where: { id: id } });
   }
 }
