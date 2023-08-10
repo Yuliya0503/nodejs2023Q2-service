@@ -32,7 +32,7 @@ export class FavoritesService {
           artistId: album?.artistId,
           id: album?.id,
           name: album?.name,
-          grammy: album?.year,
+          year: album?.year,
         };
       }),
     );

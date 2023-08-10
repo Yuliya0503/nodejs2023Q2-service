@@ -29,24 +29,22 @@ model Artist {
 }
 
 model Track {
-  id                   String  @id @default(uuid())
-  name                 String
-  artistId             String?
-  albumId              String?
-  duration             Int
-  artist               Artist? @relation(fields: [artistId], references: [id])
-  album                Album?  @relation(fields: [albumId], references: [id])
-  favoritesFavoritesId String?
+  id       String  @id @default(uuid())
+  name     String
+  artistId String?
+  albumId  String?
+  duration Int
+  artist   Artist? @relation(fields: [artistId], references: [id])
+  album    Album?  @relation(fields: [albumId], references: [id])
 }
 
 model Album {
-  id                   String  @id @default(uuid())
-  name                 String
-  year                 Int
-  artistId             String?
-  artist               Artist? @relation(fields: [artistId], references: [id])
-  tracks               Track[]
-  favoritesFavoritesId String?
+  id       String  @id @default(uuid())
+  name     String
+  year     Int
+  artistId String?
+  artist   Artist? @relation(fields: [artistId], references: [id])
+  tracks   Track[]
 }
 
 model Favorites {

@@ -27,7 +27,6 @@ CREATE TABLE "Track" (
     "artistId" TEXT,
     "albumId" TEXT,
     "duration" INTEGER NOT NULL,
-    "favoritesFavoritesId" TEXT,
 
     CONSTRAINT "Track_pkey" PRIMARY KEY ("id")
 );
@@ -38,7 +37,6 @@ CREATE TABLE "Album" (
     "name" TEXT NOT NULL,
     "year" INTEGER NOT NULL,
     "artistId" TEXT,
-    "favoritesFavoritesId" TEXT,
 
     CONSTRAINT "Album_pkey" PRIMARY KEY ("id")
 );
