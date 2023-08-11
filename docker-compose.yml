@@ -6,16 +6,47 @@ version: '3.9'
 # Раздел, в котором будут описаны сервисы, начинается с 'services'.
 services:
 
+  app:
+    container_name: home-library_app
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    image: node:18-alpine3.17
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - postgres
+    volumes:
+      - ./:/app
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+   
+
   postgres:
     container_name: postgres_db
+    build: 
+      dockerfile: ./src/db/Dockerfile
     image: postgres:13.5-alpine
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data
     volumes:
       - postgres:/var/lib/postgresql/data
     ports: 
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    
+
+
+
 volumes:
+  app: 
+  ignore: 
   postgres:
