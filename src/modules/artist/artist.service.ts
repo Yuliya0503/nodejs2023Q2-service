@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { v4 } from 'uuid';
-import { valodatorId, validatorTypeForAtrist } from 'src/helpers/validator';
+import { valodatorId, validatorTypeForAtrist } from '../../helpers/validator';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { PrismaClient } from '@prisma/client';

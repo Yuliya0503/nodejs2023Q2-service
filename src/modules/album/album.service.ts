@@ -5,7 +5,7 @@ import {
   valodatorId,
   validatorNameYear,
   validatorArtistId,
-} from 'src/helpers/validator';
+} from '../../helpers/validator';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 import { PrismaClient } from '@prisma/client';

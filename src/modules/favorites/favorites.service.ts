@@ -1,5 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { valodatorId } from 'src/helpers/validator';
+import { valodatorId } from '../../helpers/validator';
 import { PrismaClient } from '@prisma/client';
 import { v4 } from 'uuid';
 
