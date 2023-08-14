@@ -81,6 +81,14 @@ After building the images using docker-compose up, you have the option to perfor
 npm run docker:scan
 ```
 
+## Networks
+
+Check user-defined bridge:
+
+```
+docker network inspect library-service
+```
+
 ### Auto-fix and format
 
 Linter check:
