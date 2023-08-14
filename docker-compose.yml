@@ -1,9 +1,4 @@
-# Файл docker-compose должен начинаться с тега версии.
 version: '3.9'
-# Следует учитывать, что docker-composes работает с сервисами.
-# 1 сервис = 1 контейнер.
-# Сервисом может быть клиент, сервер, сервер баз данных...
-# Раздел, в котором будут описаны сервисы, начинается с 'services'.
 services:
 
   app:
@@ -12,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
-    image: app-image
+    image: yuliyanarkevich/home-library_app
     ports:
       - ${PORT}:${PORT}
     depends_on:
@@ -31,7 +26,7 @@ services:
     container_name: postgres_db
     build: 
       dockerfile: ./src/db/Dockerfile
-    image: db-image
+    image: yuliyanarkevich/home-library_db
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
