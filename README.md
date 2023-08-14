@@ -83,7 +83,7 @@ npm run docker:scan
 
 ## Networks
 
-Check user-defined bridge(run locally):
+Check user-defined bridge(runs locally as Docker is not used in images):
 
 ```
 docker network inspect library-service
