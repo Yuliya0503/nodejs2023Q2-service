@@ -1,24 +1,11 @@
-FROM node:18-alpine3.18 as build
-
+FROM node:18-alpine3.17 as dependencies
 WORKDIR /app
+COPY package.json ./
+RUN npm install --omit=dev
 
+FROM node:18-alpine3.17 as builder
+WORKDIR /app
+COPY --from=dependencies /app/node_modules/ node_modules
 COPY . .
-
-RUN npm install
-
-RUN npm run build
-
-FROM node:18-alpine3.18 
-
-WORKDIR /app
-
-COPY package.json . 
-COPY --from=build /app/dist ./dist
-
-RUN npm install -g ts-node-dev
-
 EXPOSE 4000
-
-CMD npx ts-node-dev --transpile-only --ignore-watch node_modules src/main.ts
-
-
+CMD npx prisma migrate dev && npm run start:dev
