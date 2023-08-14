@@ -1,22 +1,24 @@
-FROM node:18-alpine3.17 as build
+FROM node:18-alpine3.18 as build
 
 WORKDIR /app
 
-COPY package*.json .
+COPY . .
 
-RUN npm install --only=production
+RUN npm install
 
-FROM node:18-alpine3.17
+RUN npm run build
+
+FROM node:18-alpine3.18 
 
 WORKDIR /app
 
-COPY --from=build /app/node_modules/ node_modules
-COPY package.json . tsconfig*.json nest-cli.json ./
-COPY doc/ doc/
-COPY prisma/ prisma/
-COPY src/ src/
+COPY package.json . 
+COPY --from=build /app/dist ./dist
 
-EXPOSE ${PORT}
+RUN npm install -g ts-node-dev
 
-CMD npx prisma migrate dev && npm run start:dev 
+EXPOSE 4000
+
+CMD npx ts-node-dev --transpile-only --ignore-watch node_modules src/main.ts
+
 
