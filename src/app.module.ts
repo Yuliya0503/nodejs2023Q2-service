@@ -5,6 +5,7 @@ import { ArtistModule } from './modules/artist/artist.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { TrackModule } from './modules/track/track.module';
 import { LoggerModule } from './modules/logger/logger.module';
+import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
     UserModule,
@@ -13,6 +14,7 @@ import { LoggerModule } from './modules/logger/logger.module';
     FavoritesModule,
     TrackModule,
     LoggerModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
