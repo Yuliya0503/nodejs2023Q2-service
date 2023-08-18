@@ -5,3 +5,11 @@ export interface ILoggerService {
   warn(message: string): Promise<void>;
   error(message: string): Promise<void>;
 }
+
+export enum LogLevel {
+  LOG = 1,
+  VERBOSE = 2,
+  DEBUG = 3,
+  WARN = 4,
+  ERROR = 5,
+}
