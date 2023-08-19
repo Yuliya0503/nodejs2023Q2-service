@@ -55,6 +55,14 @@ export class UserService {
     return userWithNotPassword;
   }
 
+  async getUserByLogin(login: string): Promise<User> {
+    const user = await prisma.user.findFirst({ where: { login: login } });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.FORBIDDEN);
+    }
+    return user;
+  }
+
   async update(id: string, { oldPassword, newPassword }: UpdateUserDto) {
     if (!oldPassword || !newPassword) {
       throw new HttpException(
