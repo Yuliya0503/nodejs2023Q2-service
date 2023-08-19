@@ -4,4 +4,5 @@ export default class AuthConst {
   public static TOKEN_EXPIRE_TIME = process.env.TOKEN_EXPIRE_TIME;
   public static TOKEN_REFRESH_EXPIRE_TIME =
     process.env.TOKEN_REFRESH_EXPIRE_TIME;
+  public static BEARER_PREFIX = 'Bearer';
 }
