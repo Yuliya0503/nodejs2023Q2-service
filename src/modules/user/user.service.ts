@@ -1,20 +1,32 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { v4 } from 'uuid';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { valodatorId, validatorPassAndLogin } from '../../helpers/validator';
 import { PrismaClient } from '@prisma/client';
+import * as bcript from 'bcryptjs';
 
 const prisma = new PrismaClient();
+export const roundsOfHashing = 10;
 
 @Injectable()
 export class UserService {
   async create(CreateUserDto: CreateUserDto) {
+    const hashedPassword = await bcript.hash(
+      CreateUserDto.password,
+      roundsOfHashing,
+    );
     const newUser: User = {
       id: v4(),
       login: CreateUserDto.login,
-      password: CreateUserDto.password,
+      password: hashedPassword,
       version: 1,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -55,6 +67,18 @@ export class UserService {
     return userWithNotPassword;
   }
 
+  async getUserByLogin(login: string) {
+    if (!login) throw new BadRequestException('Invalid login!');
+    if (!(await prisma.user.findFirst({ where: { login: login } })))
+      throw new NotFoundException('User not found');
+
+    return await prisma.user.findFirst({
+      where: {
+        login: login,
+      },
+    });
+  }
+
   async update(id: string, { oldPassword, newPassword }: UpdateUserDto) {
     if (!oldPassword || !newPassword) {
       throw new HttpException(
@@ -70,9 +94,10 @@ export class UserService {
     if (user.password !== oldPassword) {
       throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
     }
+    const updatePass = await bcript.hash(newPassword, roundsOfHashing);
     const newDataUser = {
       ...user,
-      password: newPassword,
+      password: updatePass,
       updatedAt: Date.now(),
       version: (user.version += 1),
     };
@@ -94,5 +119,20 @@ export class UserService {
     }
 
     return await prisma.user.delete({ where: { id: id } });
+  }
+
+  async updateRefreshTokenById(id: string, refreshToken: string) {
+    try {
+      await prisma.user.update({
+        where: { id: id },
+        data: {
+          refreshToken: refreshToken,
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 }
