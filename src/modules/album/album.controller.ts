@@ -22,6 +22,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiTags,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Album } from './entities/album.entity';
 
@@ -31,6 +32,7 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Post()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Add new album',
     description: 'Add new album information',
@@ -47,6 +49,7 @@ export class AlbumController {
   }
 
   @Get()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get albums list',
     description: 'Gets all library albums list',
@@ -60,6 +63,7 @@ export class AlbumController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get single album by id',
     description: 'Gets single album by id',
@@ -84,6 +88,7 @@ export class AlbumController {
   }
 
   @Put(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update album information',
     description: 'Update library album information by UUID',
@@ -111,6 +116,7 @@ export class AlbumController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Delete album',
     description: 'Delete album from library',

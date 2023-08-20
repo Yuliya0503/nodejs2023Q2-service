@@ -22,6 +22,7 @@ import {
   ApiBadRequestResponse,
   ApiOkResponse,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Track } from './entities/track.entity';
 
@@ -31,6 +32,7 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Post()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Add new track',
     description: 'Add new track information',
@@ -44,6 +46,7 @@ export class TrackController {
   }
 
   @Get()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get tracks list',
     description: 'Gets all library tracks list',
@@ -57,6 +60,7 @@ export class TrackController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get single track by id',
     description: 'Gets single track by id',
@@ -76,6 +80,7 @@ export class TrackController {
   }
 
   @Put(':id')
+  @ApiBearerAuth()
   @ApiParam({
     type: 'string',
     format: 'uuid',
@@ -98,6 +103,7 @@ export class TrackController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @ApiParam({
     type: 'string',
     format: 'uuid',
