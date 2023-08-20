@@ -15,7 +15,7 @@ git clone  https://github.com/Yuliya0503/nodejs2023Q2-service.git
 Switch to branch HLSpart2:
 
 ```
-git checkout HLSpart2
+git checkout HLSPart3
 ```
 
 ## Installing NPM modules
@@ -40,16 +40,7 @@ The images are available on Docker Hub. Please complete the following steps:
 
 1. Follow the link [https://hub.docker.com/u/yuliyanarkevich](https://hub.docker.com/u/yuliyanarkevich)
 
-2. Image Download:
-   For the images [yuliyanarkevich/home-library_app](https://hub.docker.com/r/yuliyanarkevich/home-library_app) and [yuliyanarkevich/home-library_db](https://hub.docker.com/r/yuliyanarkevich/home-library_db), employ the subsequent commands to fetch the images:
-
-```
-  docker pull yuliyanarkevich/home-library_app:latest
-```
-
-```
-  docker pull yuliyanarkevich/home-library_db:latest
-```
+2. Created images [yuliyanarkevich/home-library_app](https://hub.docker.com/r/yuliyanarkevich/home-library_app) and [yuliyanarkevich/home-library_db](https://hub.docker.com/r/yuliyanarkevich/home-library_db)in Docker Hub.
 
 3. To test your application with Docker Hub images, pull the images and run the containers by running the command (make sure port 4000 is free):
 
