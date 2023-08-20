@@ -13,6 +13,8 @@ import { FavoritesService } from './modules/favorites/favorites.service';
 import { LogService } from './modules/log/log.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoggerMiddleware } from './modules/middleware/log.middleware';
+import { AuthModule } from './modules/auth/auth.module';
+import { AuthService } from './modules/auth/auth.service';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { LoggerMiddleware } from './modules/middleware/log.middleware';
     FavoritesModule,
     TrackModule,
     LogModule,
+    AuthModule,
   ],
   providers: [
     UserService,
@@ -31,6 +34,7 @@ import { LoggerMiddleware } from './modules/middleware/log.middleware';
     FavoritesService,
     LogService,
     JwtService,
+    AuthService,
   ],
 })
 export class AppModule implements NestModule {

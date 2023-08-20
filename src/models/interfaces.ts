@@ -33,3 +33,22 @@ export interface IFavorites {
   albums: string[]; // favorite albums ids
   tracks: string[]; // favorite tracks ids
 }
+
+export type signupDto = {
+  login: string;
+  password: string;
+};
+
+export type loginDto = {
+  login: string;
+  password: string;
+};
+
+export type refreshDto = {
+  refreshToken: string;
+};
+
+export type tokensObject = {
+  accessToken: string;
+  refreshToken: string;
+};
