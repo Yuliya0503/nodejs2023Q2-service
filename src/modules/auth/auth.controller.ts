@@ -1,6 +1,3 @@
-import { loginDto, refreshDto, signupDto } from 'src/models/interfaces';
-import { AuthService } from './auth.service';
-import { Public } from '../decorators/decorators';
 import {
   ClassSerializerInterceptor,
   Controller,
@@ -10,6 +7,9 @@ import {
   Body,
   ForbiddenException,
 } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { Public } from '../decorators/decorators';
+import { loginDto, refreshDto, signupDto } from '../../models/interfaces';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
