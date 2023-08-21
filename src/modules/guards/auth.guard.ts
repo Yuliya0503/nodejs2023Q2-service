@@ -13,46 +13,61 @@ import { Request } from 'express';
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    private reflector: Reflector,
+    private readonly reflector: Reflector,
   ) {}
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    const authHeader: string = request.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      return authHeader.slice(7); // Remove 'Bearer ' prefix
+    }
+    return undefined;
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const isPublic: boolean = this.reflector.getAllAndOverride<boolean>(
+      IS_PUBLIC_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
     if (isPublic) {
       return true;
     }
+
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const token: string = this.extractTokenFromHeader(request);
+
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Missing token');
     }
+
     try {
-      await this.jwtService.verifyAsync(token, {
+      const decodedToken = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET_KEY,
-        ignoreExpiration: true,
       });
-    } catch {
+
+      if (!decodedToken) {
+        throw new UnauthorizedException('Invalid token');
+      }
+
+      return true;
+    } catch (error) {
       if (request.url === '/auth/refresh') {
         try {
-          await this.jwtService.verifyAsync(token, {
-            secret: process.env.JWT_SECRET_KEY,
+          const decodedRefreshToken = await this.jwtService.verifyAsync(token, {
+            secret: process.env.JWT_SECRET_REFRESH_KEY,
             ignoreExpiration: true,
           });
+
+          if (!decodedRefreshToken) {
+            throw new UnauthorizedException('Invalid refresh token');
+          }
         } catch {
-          throw new UnauthorizedException();
+          throw new UnauthorizedException('Unauthorized');
         }
       } else {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('Unauthorized');
       }
     }
-    return true;
   }
 }
