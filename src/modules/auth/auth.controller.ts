@@ -20,7 +20,7 @@ export class AuthController {
   @Post('/signup')
   @HttpCode(201)
   async singup(@Body() dto: signupDto) {
-    return await this.authService.singup(dto);
+    return await this.authService.signup(dto);
   }
 
   @Public()
