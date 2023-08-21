@@ -1,5 +1,5 @@
 import { Injectable, LoggerService } from '@nestjs/common';
-import { appendFile, stat } from 'fs/promises';
+import { appendFile, stat, readdir, mkdir } from 'fs/promises';
 import { resolve } from 'path';
 import { config } from 'dotenv';
 config();
@@ -13,6 +13,9 @@ export class LogService implements LoggerService {
   errorLogFile: string;
   warningLogFile: string;
   logMaxSize: number;
+  logLevel: number;
+  logDirectory: string;
+  logFolder: string;
 
   constructor() {
     this.logfileIndex = 1;
@@ -22,21 +25,33 @@ export class LogService implements LoggerService {
     this.errorLogFile = process.env.ERROR_LOG_FILE;
     this.warningLogFile = process.env.WARNING_LOG_FILE;
     this.logMaxSize = Number(process.env.LOG_MAX_SIZE);
+    this.logLevel = Number(process.env.LOGGING_LEVEL);
+    this.logDirectory = process.env.LOG_DIR;
+    this.logFolder = `${process.cwd()}/${this.logDirectory}/`;
+  }
+
+  private async writeToFolder() {
+    try {
+      await readdir(this.logFolder);
+    } catch (err) {
+      await mkdir(this.logFolder, { recursive: true });
+    }
   }
 
   async log(message: any) {
+    await this.writeToFolder();
     let pathToLog = resolve(
-      process.cwd(),
-      `${this.logFile}_${this.logfileIndex}.txt`,
+      this.logFolder,
+      `${this.logFile}_${this.errorLogFileIndex}.log`,
     );
     try {
       const stats = await stat(pathToLog);
       const size = stats.size;
-      if (size > this.logMaxSize * 1024) {
+      if (size > this.logMaxSize) {
         this.logfileIndex++;
         pathToLog = resolve(
-          process.cwd(),
-          `${this.logFile}_${this.errorLogFileIndex}.txt`,
+          this.logFolder,
+          `${this.logFile}_${this.errorLogFileIndex}.log`,
         );
       }
     } catch (error) {
@@ -50,56 +65,63 @@ export class LogService implements LoggerService {
       console.error(error);
     }
   }
+
   async warn(message: any) {
-    let pathToWarningLog = resolve(
-      process.cwd(),
-      `${this.warningLogFile}_${this.warningLogFileIndex}.txt`,
-    );
-    try {
-      const stats = await stat(pathToWarningLog);
-      const size = stats.size;
-      if (size > this.logMaxSize * 1024) {
-        this.warningLogFileIndex++;
-        pathToWarningLog = resolve(
-          process.cwd(),
-          `${this.warningLogFile}_${this.warningLogFileIndex}.txt`,
-        );
+    if (this.logLevel > 1) {
+      await this.writeToFolder();
+      let pathToWarningLog = resolve(
+        this.logFolder,
+        `${this.warningLogFile}_${this.warningLogFileIndex}.log`,
+      );
+      try {
+        const stats = await stat(pathToWarningLog);
+        const size = stats.size;
+        if (size > this.logMaxSize) {
+          this.warningLogFileIndex++;
+          pathToWarningLog = resolve(
+            this.logFolder,
+            `${this.warningLogFile}_${this.warningLogFileIndex}.log`,
+          );
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-    console.log(message);
-    try {
-      await appendFile(pathToWarningLog, `${message}\n`, 'utf8');
-    } catch (error) {
-      console.error(error);
+      console.log(message);
+      try {
+        await appendFile(pathToWarningLog, `${message}\n`, 'utf8');
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
   async error(message: any) {
-    let pathToErrorLog = resolve(
-      process.cwd(),
-      `${this.errorLogFile}_${this.errorLogFileIndex}.txt`,
-    );
-    try {
-      const stats = await stat(pathToErrorLog);
-      const size = stats.size;
-      if (size > this.logMaxSize * 1024) {
-        this.errorLogFileIndex++;
-        pathToErrorLog = resolve(
-          process.cwd(),
-          `${this.errorLogFile}_${this.errorLogFileIndex}.txt`,
-        );
+    if (this.logLevel > 0) {
+      await this.writeToFolder();
+      let pathToErrorLog = resolve(
+        this.logFolder,
+        `${this.errorLogFile}_${this.errorLogFileIndex}.log`,
+      );
+      try {
+        const stats = await stat(pathToErrorLog);
+        const size = stats.size;
+        if (size > this.logMaxSize) {
+          this.errorLogFileIndex++;
+          pathToErrorLog = resolve(
+            this.logFolder,
+            `${this.errorLogFile}_${this.errorLogFileIndex}.log`,
+          );
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
 
-    console.log(message);
-    try {
-      await appendFile(pathToErrorLog, `${message}\n`, 'utf8');
-    } catch (error) {
-      console.error(error);
+      console.log(message);
+      try {
+        await appendFile(pathToErrorLog, `${message}\n`, 'utf8');
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 }
