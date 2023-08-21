@@ -4,6 +4,7 @@ import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LogService } from './modules/log/log.service';
+import { HttpExceptionFilter } from './modules/exceptions/http-exception-filter';
 
 const PORT = Number(process.env.PORT);
 
@@ -13,6 +14,7 @@ async function bootstrap() {
     bodyParser: true,
     rawBody: true,
   });
+  app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .addServer('/doc')
