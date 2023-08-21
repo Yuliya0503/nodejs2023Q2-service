@@ -8,6 +8,7 @@ import { readFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { serve, setup } from 'swagger-ui-express';
 
+const PORT = Number(process.env.PORT) || 4000;
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     bodyParser: true,
@@ -16,7 +17,7 @@ async function bootstrap(): Promise<void> {
   });
 
   configureApp(app);
-  await app.listen(process.env.PORT);
+  await app.listen(PORT);
 }
 
 async function configureApp(app: INestApplication): Promise<void> {
