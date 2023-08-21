@@ -16,12 +16,15 @@ export class LogService implements LoggerService {
   private logFolder: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.logFile = process.env.LOG_FILE;
-    this.errorLogFile = process.env.ERROR_LOG_FILE;
-    this.warningLogFile = process.env.WARNING_LOG_FILE;
-    this.logMaxSize = Number(process.env.LOG_MAX_SIZE);
-    this.logLevel = Number(process.env.LOGGING_LEVEL);
-    this.logFolder = `${process.cwd()}/${process.env.LOG_DIR}`;
+    this.logFile = this.configService.get<string>('LOG_FILE');
+    this.errorLogFile = this.configService.get<string>('ERROR_LOG_FILE');
+    this.warningLogFile = this.configService.get<string>('WARNING_LOG_FILE');
+    this.logMaxSize = this.configService.get<number>('LOG_MAX_SIZE');
+    this.logLevel = this.configService.get<number>('LOG_LEVEL');
+    this.logFolder = resolve(
+      process.cwd(),
+      this.configService.get<string>('LOG_DIR'),
+    );
     this.writeToFolder();
   }
 

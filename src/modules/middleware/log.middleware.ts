@@ -15,9 +15,11 @@ export class LoggerMiddleware implements NestMiddleware {
     response: Response,
     next: NextFunction,
   ) {
+    const { method, url, rawHeaders } = request;
     const body = request.rawBody ? request.rawBody.toString() : '';
+    const statusCode = response.statusCode;
     this.logger.log(
-      `Logging http request. Method: ${request.method} - URL: ${request.url} - Header: ${request.rawHeaders} - Body: ${body} - Status code: ${response.statusCode}`,
+      `Method: ${method} - URL: ${url} - Header: ${rawHeaders} - Body: ${body} - Status code: ${statusCode}`,
     );
 
     next();
