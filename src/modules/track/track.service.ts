@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { mockFavorites, mockTracks } from '../../db/db';
 import { v4 } from 'uuid';
 import { Track } from './entities/track.entity';
 import {
@@ -9,10 +8,18 @@ import {
   validatorNameAndDuration,
   validatorTrack,
 } from '../../helpers/validator';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 @Injectable()
 export class TrackService {
-  public create({ name, artistId, albumId, duration }: CreateTrackDto): Track {
+  async create({
+    name,
+    artistId,
+    albumId,
+    duration,
+  }: CreateTrackDto): Promise<Track> {
     const newTrack: Track = {
       id: v4(),
       name,
@@ -21,48 +28,48 @@ export class TrackService {
       duration,
     };
     validatorNameAndDuration(name, duration);
-    mockTracks.push(newTrack);
-    return newTrack;
+    return await prisma.track.create({ data: newTrack });
   }
 
-  public getTracks(): Track[] {
-    return mockTracks;
+  async getTracks(): Promise<Track[]> {
+    return await prisma.track.findMany();
   }
 
-  public getTrackById(id: string): Track {
+  async getTrackById(id: string): Promise<Track> {
     valodatorId(id);
-    const track: Track = mockTracks.find((track) => track.id === id);
+    const track: Track = await prisma.track.findFirst({ where: { id: id } });
     validatorTrack(track);
     return track;
   }
 
-  public update(
+  async update(
     id: string,
     { name, artistId, albumId, duration }: UpdateTrackDto,
-  ): Track {
+  ): Promise<Track> {
     valodatorId(id);
     validatorNameAndDuration(name, duration);
-    const track: Track = mockTracks.find((track) => track.id === id);
+    const track: Track = await prisma.track.findFirst({ where: { id: id } });
     validatorTrack(track);
-    track.name = name;
-    track.artistId = artistId;
-    track.albumId = albumId;
-    track.duration = duration;
-
-    return track;
+    return await prisma.track.update({
+      where: {
+        id: id,
+      },
+      data: {
+        id: id,
+        name: name,
+        artistId: artistId,
+        albumId: albumId,
+        duration: duration,
+      },
+    });
   }
 
-  public remove(id: string): void {
+  async remove(id: string): Promise<Track> {
     valodatorId(id);
-    const trackIdInd: number = mockTracks.findIndex((track) => track.id === id);
-    if (trackIdInd === -1) {
+    const track: Track = await prisma.track.findFirst({ where: { id: id } });
+    if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
-    mockTracks.splice(trackIdInd, 1);
-    mockFavorites.tracks.forEach((trackId) => {
-      if (trackId === id) {
-        trackId = null;
-      }
-    });
+    return await prisma.track.delete({ where: { id: id } });
   }
 }

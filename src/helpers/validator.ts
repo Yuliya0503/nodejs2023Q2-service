@@ -1,6 +1,6 @@
 import { validate } from 'uuid';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ITrack } from 'src/models/interfaces';
+import { ITrack } from '../models/interfaces';
 
 export const valodatorId = (id: string) => {
   if (!validate(id)) {

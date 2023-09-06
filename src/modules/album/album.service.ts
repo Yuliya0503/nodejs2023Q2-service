@@ -1,18 +1,19 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { v4 } from 'uuid';
-import { mockAlbums, mockFavorites, mockTracks } from 'src/db/db';
 import {
   valodatorId,
   validatorNameYear,
   validatorArtistId,
-} from 'src/helpers/validator';
+} from '../../helpers/validator';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 @Injectable()
 export class AlbumService {
-  public create({ name, year, artistId }: CreateAlbumDto): Album {
+  async create({ name, year, artistId }: CreateAlbumDto): Promise<Album> {
     const newAlbum: Album = {
       id: v4(),
       name,
@@ -21,59 +22,71 @@ export class AlbumService {
     };
     validatorNameYear(name, year);
     validatorArtistId(artistId);
-    mockAlbums.push(newAlbum);
-    return newAlbum;
-  }
-
-  public getalbums(): Album[] {
-    return mockAlbums;
-  }
-
-  public getAlbum(id: string): Album {
-    valodatorId(id);
-    const album: Album = mockAlbums.find((album) => {
-      return album.id === id;
+    return await prisma.album.create({
+      data: newAlbum,
     });
+  }
+
+  async getalbums(): Promise<Album[]> {
+    return await prisma.album.findMany();
+  }
+
+  async getAlbum(id: string): Promise<Album> {
+    valodatorId(id);
+    const album: Album = await prisma.album.findFirst({ where: { id: id } });
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
     return album;
   }
 
-  public update(id: string, { name, year, artistId }: UpdateAlbumDto): Album {
+  async update(
+    id: string,
+    { name, year, artistId }: UpdateAlbumDto,
+  ): Promise<Album> {
     valodatorId(id);
     validatorNameYear(name, year);
     validatorArtistId(artistId);
-    const album: Album = mockAlbums.find((album) => {
-      return album.id === id;
-    });
+    const album: Album = await prisma.album.findFirst({ where: { id: id } });
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
-    album.name = name;
-    album.year = year;
-    album.artistId = artistId;
-    return album;
+    return await prisma.album.update({
+      where: {
+        id: id,
+      },
+      data: {
+        id: id,
+        name: name,
+        year: year,
+        artistId: artistId,
+      },
+    });
   }
 
-  public remove(id: string): void {
+  async remove(id: string): Promise<Album> {
     valodatorId(id);
-    const albumIdInd: number = mockAlbums.findIndex((album) => {
-      return album.id === id;
+    const albumIn = await prisma.album.findFirst({
+      where: { id: id },
     });
-    if (albumIdInd === -1) {
+    if (!albumIn) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
-    mockAlbums.splice(albumIdInd, 1);
-    mockTracks.forEach((track) => {
-      if (track.albumId === id) {
-        track.albumId = null;
-      }
+    await prisma.track.updateMany({
+      where: {
+        albumId: {
+          equals: id,
+        },
+      },
+      data: {
+        albumId: null,
+      },
     });
-    mockFavorites.albums.forEach((albumId) => {
-      if (albumId === id) {
-        albumId = null;
-      }
+
+    return await prisma.album.delete({
+      where: {
+        id: id,
+      },
     });
   }
 }

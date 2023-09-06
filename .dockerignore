@@ -1,0 +1,10 @@
+node_modules
+.dockerignore
+.eslintrc.js
+.gitignore
+.prettierrc
+.vscode
+test
+dist
+.git
+docker-compose.yml
