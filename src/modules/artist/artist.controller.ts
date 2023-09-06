@@ -22,6 +22,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiTags,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Artist } from './entities/artist.entity';
 
@@ -31,6 +32,7 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Post()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Add new artist',
     description: 'Add new artist',
@@ -47,6 +49,7 @@ export class ArtistController {
   }
 
   @Get()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all artists',
     description: 'Get all artists',
@@ -60,6 +63,7 @@ export class ArtistController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get single artist by id',
     description: 'Get single artist by id',
@@ -82,6 +86,7 @@ export class ArtistController {
   }
 
   @Put(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update artist information',
     description: 'Update artist information by UUID',
@@ -107,6 +112,7 @@ export class ArtistController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Delete artist',
     description: 'Delete artist from library',

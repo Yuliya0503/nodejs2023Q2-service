@@ -23,6 +23,7 @@ import {
   ApiParam,
   ApiForbiddenResponse,
   ApiNoContentResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 
@@ -32,6 +33,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all users',
     description: 'Gets all users',
@@ -42,6 +44,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get single user by id',
     description: 'Get single user by id',
@@ -61,6 +64,7 @@ export class UserController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create user',
     description: 'Creates a new user',
@@ -74,6 +78,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "Update a user's password",
     description: "Updates a user's password by ID",
@@ -97,6 +102,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: ' Delete user',
     description: ' Deletes user by ID.',

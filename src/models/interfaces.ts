@@ -33,3 +33,37 @@ export interface IFavorites {
   albums: string[]; // favorite albums ids
   tracks: string[]; // favorite tracks ids
 }
+
+export type signupDto = {
+  login: string;
+  password: string;
+};
+
+export type loginDto = {
+  login: string;
+  password: string;
+};
+
+export type refreshDto = {
+  refreshToken: string;
+};
+
+export type tokensObject = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export enum LogLevel {
+  none = 0,
+  error = 1,
+  warning = 2,
+  verbose = 3,
+}
+
+export interface IUserNotPass {
+  id: string; // uuid v4
+  login: string;
+  version: number; // integer number, increments on update
+  createdAt: number; // timestamp of creation
+  updatedAt: number; // timestamp of last update
+}

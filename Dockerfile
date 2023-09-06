@@ -8,4 +8,4 @@ WORKDIR /app
 COPY --from=dependencies /app/node_modules/ node_modules
 COPY . .
 EXPOSE 4000
-CMD npx prisma migrate dev && npm run start:dev
+CMD npx prisma generate && npx prisma migrate deploy && npm run start:dev
